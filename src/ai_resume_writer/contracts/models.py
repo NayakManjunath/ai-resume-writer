@@ -81,7 +81,7 @@ class ResumeAnalysis(BaseModel):
 
 
 class ResumeImprovement(BaseModel):
-    """Result of the resume improvement process."""
+    """Result of the resume improvement process."""  
 
     target_role: TargetRole
     format_choice: ResumeFormatChoice
