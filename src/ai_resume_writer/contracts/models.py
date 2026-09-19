@@ -17,13 +17,12 @@ class ResumeFormatChoice(str, Enum):
     KEEP_EXISTING = "keep_existing"
     USE_TEMPLATE = "use_template"
 
-
 class ResumeDocument(BaseModel):
     """Structured representation of an uploaded resume."""
 
     file_name: str = Field(min_length=1)
     file_type: str = Field(min_length=1)
-    raw_text: str = Field(min_length=1)
+    raw_text: str = ""
     sections: list[str] = Field(default_factory=list)
 
 
