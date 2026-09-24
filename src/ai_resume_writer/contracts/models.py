@@ -2,14 +2,12 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-
 class InformationStatus(str, Enum):
     """Status of information discovered during resume analysis."""
 
     DETECTED = "detected"
     SUGGESTED = "suggested"
     USER_CONFIRMED = "user_confirmed"
-
 
 class ResumeFormatChoice(str, Enum):
     """User's decision about the resume format."""
@@ -36,12 +34,11 @@ class JobDescription(BaseModel):
 
 
 class CandidateProfile(BaseModel):
-    """Candidate information extracted from the resume."""
-
     name: str | None = None
     professional_summary: str | None = None
     skills: list[str] = Field(default_factory=list)
     projects: list[str] = Field(default_factory=list)
+    experience: list[str] = Field(default_factory=list)
     experience_years: float | None = None
     education: list[str] = Field(default_factory=list)
     certifications: list[str] = Field(default_factory=list)
