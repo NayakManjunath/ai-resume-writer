@@ -2,6 +2,7 @@
 """Streamlit interface for resume and Job Description input."""
 
 import streamlit as st
+from ai_resume_writer.ui.analysis_page import render_analysis_page
 
 from ai_resume_writer.jd.input import (
     JobDescriptionInputError,
@@ -215,13 +216,24 @@ def render_input_page() -> None:
                 "Analysis and gap review will be connected in a later stage."
             )
 
-    handling = st.session_state["missing_jd_handling"]
-    if (
-        handling is not None
-        and handling.continue_without_jd
-        and job_description is None
-    ):
-        st.info(
-            "You chose to continue without a Job Description. "
-            "Recommendations must remain resume-based."
+    # Render analysis only after the required input decision is complete.
+    resume = st.session_state.get("resume_document")
+    job_description = st.session_state.get("job_description")
+    handling = st.session_state.get("missing_jd_handling")
+
+    can_analyze = (
+        resume is not None
+        and (
+            job_description is not None
+            or (
+                handling is not None
+                and handling.continue_without_jd
+            )
+        )
+    )
+
+    if can_analyze:
+        render_analysis_page(
+            resume=resume,
+            job_description=job_description,
         )
