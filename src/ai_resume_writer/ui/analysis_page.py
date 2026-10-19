@@ -27,7 +27,8 @@ from ai_resume_writer.gap_analysis.weak_evidence import (
 from ai_resume_writer.jd.parser import parse_job_description
 from ai_resume_writer.resume.parser import parse_resume_information
 from ai_resume_writer.role.resolver import resolve_target_role
-
+from ai_resume_writer.contracts.models import ResumeFormatChoice
+from ai_resume_writer.formatting.decision import resolve_format_choice
 
 def build_resume_analysis(
     *,
@@ -191,6 +192,53 @@ def _render_gaps(analysis: ResumeAnalysis) -> None:
             st.caption(f"Review status: {gap.status.value}")
 
 
+def render_format_selection() -> None:
+    """Collect and retain the user's explicit format preference."""
+
+    st.divider()
+    st.header("4. Resume format selection")
+
+    st.write("Would you like to change your resume format?")
+
+    choice = st.radio(
+        "Choose your preferred format",
+        options=[
+            "No, keep my existing format",
+            "Yes, use the professional template",
+        ],
+        index=0,
+        key="format_selection_radio",
+    )
+
+    if st.button(
+        "Confirm format",
+        type="primary",
+        key="confirm_format_selection",
+    ):
+        change_format = choice.startswith("Yes")
+        format_choice = resolve_format_choice(change_format)
+
+        st.session_state["resume_format_choice"] = format_choice
+
+        if format_choice == ResumeFormatChoice.KEEP_EXISTING:
+            st.success(
+                "Existing format selected. The app will preserve the "
+                "format as closely as technically possible. Existing "
+                "format preservation currently supports DOCX only."
+            )
+        else:
+            st.success(
+                "Professional template selected. The built-in template "
+                "will be used in the document-generation stage."
+            )
+
+    saved_choice = st.session_state.get("resume_format_choice")
+
+    if saved_choice == ResumeFormatChoice.KEEP_EXISTING:
+        st.caption("Confirmed selection: Keep existing format.")
+    elif saved_choice == ResumeFormatChoice.USE_TEMPLATE:
+        st.caption("Confirmed selection: Professional template.")
+
 def render_analysis_page(
     *,
     resume,
@@ -250,5 +298,6 @@ def render_analysis_page(
         _render_alignment(alignment)
 
     _render_gaps(analysis)
+    render_format_selection()
 
     
